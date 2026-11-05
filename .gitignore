@@ -32,3 +32,39 @@ __pycache__/
 
 # Session-specific (users may want to keep these — uncomment to ignore)
 # output/
+
+# ---------------------------------------------------------------
+# PRIVATE — personal data. Never commit these.
+# Ship config.example.md instead; your real config.md stays local.
+# ---------------------------------------------------------------
+config.md
+
+# Work notes (incl. voice-note transcripts) and old resumes
+notes/
+resume/
+
+# Your knowledge base: extractions, papers, reference material
+knowledge_base/extractions/*
+!knowledge_base/extractions/_INVENTORY.md
+knowledge_base/papers/*
+!knowledge_base/papers/.gitkeep
+knowledge_base/notes/*
+!knowledge_base/notes/.gitkeep
+
+# Built KB (derived from your notes)
+resume_builder/experience/*
+!resume_builder/experience/.gitkeep
+resume_builder/bundles/*
+!resume_builder/bundles/.gitkeep
+resume_builder/support/*
+!resume_builder/support/.gitkeep
+!resume_builder/support/ai_fingerprint_rules.md
+
+# Real JDs and generated applications (examples are allow-listed)
+JDs/*
+!JDs/example_jd.txt
+output/*
+!output/.gitkeep
+
+# Local privacy patterns for scripts/check_private.py
+.private-patterns

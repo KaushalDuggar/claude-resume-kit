@@ -9,7 +9,9 @@
 ```
 .claude/skills/
 ├── setup-extract/SKILL.md       # Extract from papers/files into structured extractions
+├── setup-extract-experience/SKILL.md  # Extract from work notes, voice transcripts, old resumes, GitHub
 ├── setup-build-kb/SKILL.md      # Build experience files, bundles, taxonomy from extractions
+├── apply/SKILL.md               # One command per job: JD → 1-page industry resume (.tex) → Notion tracker row
 ├── make-resume/SKILL.md         # Phase 0-2: JD research → bullet plan → resume/CV generation
 ├── make-cl/SKILL.md             # Cover letter generation from session file
 ├── edit-resume/SKILL.md         # Edit resume/CV from critique or user feedback
@@ -29,6 +31,9 @@ resume_builder/
 ├── experience/                  # /setup-build-kb outputs: one file per position
 ├── bundles/                     # /setup-build-kb outputs: one per target role type
 └── support/                     # /setup-build-kb outputs: skills taxonomy, pub metadata, etc.
+
+notes/                           # Per-position work notes (<Org>.md) + TIMELINE.md
+resume/                          # Old resumes (timeline + seed bullets, not ground truth)
 
 knowledge_base/                  # User's raw materials
 ├── extractions/                 # /setup-extract outputs here

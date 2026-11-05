@@ -196,6 +196,33 @@ The exact line budget depends on your template's FIXED sections (publications, p
 
 **Hybrid JDs (two role types):** Use primary role type's Priority Matrix for achievement ranking. Use secondary role type's Reframing Map for 1-2 bullets that bridge to the secondary domain.
 
+### Bullet Ordering Within a Position (per JD, never fixed)
+
+Recruiters read the first 2–3 bullets of each position and skim the rest. **Order bullets by weight for THIS JD, strongest first.** Never reuse the order from the experience file, the old resume, or a previous application.
+
+Score each selected achievement, then sort descending:
+
+| Factor | Weight | Scoring |
+|--------|--------|---------|
+| JD relevance | ×3 | Direct match to a stated JD requirement = 3, Bridge = 2, Weak = 1 |
+| Impact | ×2 | Quantified business/technical outcome (cost, latency, accuracy, scale) = 3, clear qualitative outcome = 2, activity only = 1 |
+| Ownership & depth | ×1 | Designed/built it with non-obvious engineering decisions = 3, built from a spec = 2, configured/set up = 1 |
+
+- **Ties:** JD relevance wins, then impact.
+- **The same achievement can lead for one JD and sit last for another.** A security-focused JD puts guardrail work first; a RAG/agents JD puts retrieval, ingestion, and agent-tooling work first.
+- **Merging:** when two lower-ranked achievements share a theme and the budget is tight, merge them into one bullet (e.g., two guardrail features into one "Guardrails" bullet) rather than dropping one.
+- Show the scores in the Phase 1 bullet plan so the user can override the order.
+
+### Inline Bold Emphasis
+
+Bold guides a skimming reader to the keywords that match the JD. Apply it in every experience bullet:
+
+- **Bold 2–4 items per bullet:** named tools/technologies the JD or role type values (e.g., **Azure Document Intelligence**, **AWS Textract**, **MCP**, **TypeScript**), key techniques (**prompt caching**, **hybrid retrieval**), and every headline metric (**95%**, **2 weeks to 2 days**).
+- **Never bold** whole clauses, generic words ("improved", "scalable"), or the same term twice in one position.
+- **Prefer JD vocabulary:** if the JD says "RAG" and the bullet says "retrieval pipeline", bold the term that matches the JD.
+- **Bold costs width:** apply the Bold Width Penalty (above) when counting characters; more bold means a shorter bullet.
+- Technical Skills: bold the 3–5 tools from bundle S4 "Bold tools" that best match the JD.
+
 ---
 
 ## Position Title Format

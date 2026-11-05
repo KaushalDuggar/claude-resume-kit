@@ -101,7 +101,11 @@ Cross-check against **session file framing strategy** — edits must stay consis
 - **ADD:** Insert new bullet. Budget increases by rendered lines.
 - **REMOVE:** Drop a bullet. Budget decreases.
 - **VARIANT CHANGE:** e.g., 2L → 3L. Budget changes by rendered line delta.
+- **REORDER:** Move bullets within a position. Budget unchanged. After any ADD, SWAP, MODIFY or merge, re-score the position's bullets (resume_reference.md "Bullet Ordering Within a Position") and reorder strongest-first for the session's JD.
+- **MERGE:** Combine two bullets into one. Budget decreases by one bullet.
 - **FIXED:** Blocked — show in plan with `[FIXED — cannot edit]` and explain why.
+
+Every new or rewritten bullet follows Inline Bold Emphasis (resume_reference.md).
 
 **Budget revalidation (if any change is ADD, REMOVE, SWAP-with-different-variant, or VARIANT CHANGE):**
 Recalculate total variable bullets and rendered lines. Compare against budget from resume_reference.md.

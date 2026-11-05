@@ -95,3 +95,26 @@ These are copied verbatim from your template every time.
 - **Resume package:** [N] pages + 1-page cover letter
 - **CV package:** [N] pages + 1-2 page cover letter
 - **Output .tex files ONLY** — user compiles locally
+
+---
+
+## Application Tracker (Notion)
+
+Used by `/apply`. Leave this section out if you don't track applications in Notion.
+
+- **Parent page:** [Notion page name] — [URL of the page your tracker lives under]
+- **Database:** [Database name] — [URL]
+- **Data source ID:** `[uuid]` (use as `data_source_id` when creating rows)
+- **Columns:** Company (title), Role, Level (multi-select), Location, Status (To apply → Applied → Interviewing → Offer / Rejected / Withdrawn), Date applied, JD link, Resume (files), Resume file (local .tex path), Resume focus, Referral / contact, Next step, Notes
+- **Resume upload:** Notion rejects `.tex`; upload as `<name>.tex.txt` (same content) and place it as a file block in the row's page body. The Files property cannot take MCP uploads, so attach the compiled PDF to **Resume** by hand.
+
+---
+
+## Positioning (industry resumes)
+
+Used by `/apply` and the 1-page industry template. Delete this section if you only generate academic CVs.
+
+- **Headline:** [one line: what you build, plus an interest that is true of you]
+- **Never claim** [any framing that would overstate your experience — e.g. a client type or sector you have not worked with directly]
+- **Pages:** 1 page for industry resumes.
+- **Template:** `resume_builder/templates/industry_resume_template.tex`

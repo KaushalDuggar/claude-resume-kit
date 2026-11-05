@@ -141,6 +141,8 @@ Proceeding without confirmation misaligns the entire resume and requires full re
 
 **Legend:** `*` = recommended (HIGH on Priority Matrix + Direct JD match) | `o` = available (MEDIUM priority or Bridge match) | `x` = not recommended (LOW priority or Gap)
 
+**Row order = final bullet order.** Sort recommended rows by the weighted score in resume_reference.md "Bullet Ordering Within a Position" (JD relevance ×3, impact ×2, ownership ×1) and add a `Score` column. Flag any low-ranked achievements that could be merged into one bullet.
+
 **After all positions, show:**
 - Recommended set total vs budget (from Quick Budget Card in resume_reference.md)
 - Remaining budget slots and what could fill them
@@ -189,6 +191,7 @@ FIXED sections (from `config.md` FIXED Sections) are template-locked — only ge
    - Update Status → `Phase 2: Skills DONE`
 3. Each position's bullets → **CHAR COUNT GATE after each position**
    - Position titles: bold theme + date must fit ONE line (see resume_reference.md). If wrapping, shorten title.
+   - Write bullets in the confirmed score order (strongest first) and apply Inline Bold Emphasis (2–4 bolded JD-matching tools/techniques/metrics per bullet; see resume_reference.md).
    - After each position: Update Status → `Phase 2: [Position] DONE`
 4. **PAGE FILL GATE after all experience**
 

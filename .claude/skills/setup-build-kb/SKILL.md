@@ -27,8 +27,9 @@ Parse `$ARGUMENTS`:
 4. Scan `resume_builder/` to see what's already built
 
 **Pre-flight check:**
-- If `_INVENTORY.md` is empty or has no entries: "No extractions found. Run `/setup-extract` first." Stop.
-- If fewer than 2 extractions: warn "Only [N] extraction(s) found. KB quality improves with more papers. Continue anyway?"
+- If `_INVENTORY.md` is empty or has no entries: "No extractions found. Run `/setup-extract` (papers) or `/setup-extract-experience` (work experience) first." Stop.
+- If fewer than 2 extractions: warn "Only [N] extraction(s) found. KB quality improves with more extractions. Continue anyway?"
+- Note the mix of extraction types from the inventory's Type column (`paper` / `experience`; rows without a Type are papers). Experience extractions have `Type: experience` in their Metadata.
 
 Progress: "Found [N] extractions across [M] positions. Config has [K] role types defined."
 
@@ -42,8 +43,15 @@ Progress: "Found [N] extractions across [M] positions. Config has [K] role types
 
 **For each position** (from `config.md` or inferred from extraction metadata):
 
-1. Group extractions by the position they belong to (based on dates, institution, or user clarification)
-2. Ask the user to confirm grouping if ambiguous: "I've grouped these papers under [Position]. Correct?"
+1. Group extractions by the position they belong to (based on dates, institution, or user clarification). Experience extractions already name their Organisation and Position; positions and dates also live in `notes/TIMELINE.md` if it exists.
+2. Ask the user to confirm grouping if ambiguous: "I've grouped these extractions under [Position]. Correct?"
+
+**Experience extractions:** fill the achievement fields as follows:
+- **Paper:** → write `internal (industry work)`
+- **User's role:** → the extraction's ownership level (sole owner / led / core contributor / contributor)
+- **Status:** → production / POC / internal / shipped to clients
+- Carry over only Key Results marked verified or approx; leave `unverified` results out of bullet variants
+- Apply the extraction's **Confidential** wording (e.g., generic client names) in every bullet variant
 
 **Experience file format** (`resume_builder/experience/experience_<position_key>.md`):
 
@@ -122,6 +130,8 @@ Ask user to review: "Are the groupings correct? Any achievements missing or misa
 - **Proficient:** Used extensively in published work, comfortable teaching
 - **Familiar:** Used in one project, or contributed to someone else's implementation
 
+For experience extractions, read "paper" as "project": Expert = designed/built it in production across multiple projects; Proficient = used extensively in shipped work; Familiar = one project or POC only.
+
 Progress: "Built taxonomy — [N] skills across [M] categories"
 
 ---
@@ -129,6 +139,14 @@ Progress: "Built taxonomy — [N] skills across [M] categories"
 ## Phase 3: Build Publication Metadata
 
 **Goal:** Structured pub data for resume/CV generation.
+
+**No papers?** If every extraction is `Type: experience`, write this stub instead and skip the rest of Phase 3:
+
+```markdown
+# Publication Metadata
+
+No publications. Omit the Publications section from the resume and CV, and any Google Scholar link or publication metrics from the header and summary.
+```
 
 **Build** `resume_builder/support/pub_metadata.md`:
 
@@ -271,6 +289,8 @@ Progress: "Building bundle for [role type] — [N] HIGH priority achievements, [
 
 **Goal:** Field context for cover letters — NOT for resume bullets.
 
+For experience extractions, the context is industry rather than scientific: the business or engineering problem, how others in the industry solve it, and why it matters to employers (e.g., "prompt injection is a top risk for enterprise LLM adoption").
+
 **For each position**, create `resume_builder/support/significance_<position_key>.md`:
 
 ```markdown
@@ -317,7 +337,7 @@ After all phases complete (or after the requested subset), present:
 - [ ] At least 1 experience file with 5+ achievements
 - [ ] Skills taxonomy with 20+ skills
 - [ ] At least 1 bundle matching a target role type
-- [ ] Pub metadata complete
+- [ ] Pub metadata complete (or the no-publications stub)
 - [ ] Reframing guide covers all achievements
 - [ ] Significance files for cover letter depth
 

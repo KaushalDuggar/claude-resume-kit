@@ -9,10 +9,12 @@ Detailed reference for claude-resume-kit. For the quick overview, see [README.md
 ```
 claude-resume-kit/
 ├── CLAUDE.md                          # Auto-loaded project instructions
-├── config.md                          # Your personal configuration
-├── .claude/skills/                    # 6 skills (invoked as /skill-name)
+├── config.example.md                  # Template — copy to config.md (gitignored)
+├── .claude/skills/                    # 8 skills (invoked as /skill-name)
 │   ├── setup-extract/SKILL.md         # Extract from papers → structured data
+│   ├── setup-extract-experience/      # Extract from work notes / voice transcripts
 │   ├── setup-build-kb/SKILL.md        # Synthesize KB from extractions
+│   ├── apply/SKILL.md                 # JD → 1-page industry resume → Notion row
 │   ├── make-resume/SKILL.md           # JD → tailored resume/CV (.tex)
 │   ├── make-cl/SKILL.md              # Session → cover letter (.tex)
 │   ├── edit-resume/SKILL.md           # Edit from critique/feedback
@@ -30,6 +32,7 @@ claude-resume-kit/
 │   │   ├── cv.cls                     # Multi-page CV class
 │   │   ├── resume_template.tex        # Resume structural template
 │   │   ├── cv_template.tex            # CV structural template
+│   │   ├── industry_resume_template.tex # 1-page industry resume (used by /apply)
 │   │   └── coverletter_template.tex   # Cover letter template
 │   ├── helpers/
 │   │   └── char_count.py              # Character counting utility for bullets
@@ -41,8 +44,12 @@ claude-resume-kit/
 │   ├── extractions/                   # Paper extractions (built by /setup-extract)
 │   ├── papers/                        # Drop your PDFs / .tex source here
 │   └── notes/                         # Any other reference material
-├── JDs/                               # Job descriptions (text files)
-└── output/                            # Generated .tex files, session files, critiques
+├── notes/                             # YOUR work notes, one per position (gitignored)
+├── scripts/
+│   ├── check_private.py               # Privacy guard — blocks commits with personal data
+│   └── install-hooks.sh               # Installs it as a pre-commit hook
+├── JDs/                               # Job descriptions (gitignored except the example)
+└── output/                            # Generated .tex, session files, critiques (gitignored)
 ```
 
 ---
@@ -209,3 +216,162 @@ Each person needs their own clone with their own `config.md`, knowledge base, an
 
 **Q: What Claude model should I use?**
 The skills are designed for Claude's most capable models (Opus, Sonnet). Less capable models may skip steps or produce lower-quality output.
+
+---
+
+## The experience track (work notes → industry resume)
+
+The paper track above assumes your source material is published writing. For
+industry roles, most of what matters was never written down: it lives in your
+head, in Slack, and in meeting recordings. The experience track turns that into
+the same kind of knowledge base.
+
+```
+Meeting recordings ──► transcripts ──► notes/<Org>.md ──► /setup-extract-experience
+(Granola, Otter, …)    /capture mode    (one per position)           │
+                                                                     ▼
+                                              knowledge_base/extractions/*.md
+                                                                     │
+                                                    /setup-build-kb  ▼
+                                              resume_builder/experience/ + bundles/
+```
+
+### 1. Capture: get the work out of your head
+
+Two ways in, and you can mix them:
+
+- **From meeting notes.** A tool like [Granola](https://www.granola.ai/) that
+  transcribes and summarizes your standups, design reviews and 1:1s is a good
+  source, because it already holds the decisions you made and why. Paste the
+  relevant transcript or summary into `notes/<Org>.md`.
+- **By dictation.** Run `/setup-extract-experience capture <Org>` and talk
+  through one project at a time. Each project is appended to `notes/<Org>.md`
+  as you go, so a long history can be captured over several sittings.
+
+Keep one file per position (`notes/Acme.md`), plus `notes/TIMELINE.md` for dates
+and `notes/Projects.md` for side projects. These files are gitignored.
+
+### 2. Mark what you are unsure of, instead of guessing
+
+Capture writes a `TODO` marker wherever a fact is missing or uncertain — a metric
+you can't remember, which employer a project belonged to, whether a result was
+measured or estimated:
+
+```markdown
+- **What:** cut LLM spend with prompt caching
+  - ⚠️ `TODO` what's the actual figure, over what period, and how was it
+    measured (billing dashboard before vs. after, or an estimate)?
+```
+
+This matters more than it looks. Unmarked gaps are where a resume quietly
+acquires numbers nobody can defend in an interview. `TODO`s survive into the
+critique, which reports them as unverified claims rather than letting them pass.
+
+### 3. Extract and build
+
+```
+/setup-extract-experience notes/Acme.md     # one position → structured extractions
+/setup-build-kb                             # all extractions → experience files + bundles
+```
+
+From here the per-application flow is identical to the paper track.
+
+---
+
+## /apply: one command per job
+
+`/make-resume` is the long form: JD research, a bullet plan you approve, then
+generation. `/apply` is the short form for industry roles where you are applying
+to many positions and the shape of the resume is settled.
+
+```
+/apply JDs/target_job.txt
+```
+
+It reads the JD, picks and orders bullets from your knowledge base, renders the
+1-page `industry_resume_template.tex`, and writes the usual
+`output/<Company_Role>/` folder. Then, if you have configured a tracker, it
+creates the application row for you.
+
+### Notion tracker
+
+Configure the **Application Tracker** section of `config.md` with your parent
+page, database and data source id. `/apply` then creates a row with the company,
+role, level, location, JD link, a one-line note on what the resume leads with,
+and the local `.tex` path, at status `To apply`.
+
+Two Notion limitations shape this, and both are handled in the skill rather than
+left to surprise you:
+
+- Notion rejects a `.tex` upload, so the source is uploaded as `<name>.tex.txt`
+  and placed as a file block in the row's page body.
+- The Files property cannot take an upload over MCP, so you attach the compiled
+  PDF to the **Resume** property by hand.
+
+The tracker is optional. Leave that config section out and `/apply` stops after
+writing the `.tex`.
+
+---
+
+## Does the resume actually fit the job?
+
+`/critique` answers this in a fresh session, scoring the generated package from
+five reader perspectives across eight weighted dimensions. For fit specifically,
+the parts that matter are:
+
+- **JD vocabulary extraction** — the JD's own terms, ranked by weight, each
+  marked matched / partial / missing against your resume.
+- **Gap ranking** — gaps sorted into fatal, serious and cosmetic, so you know
+  which ones to fix and which to ignore.
+- **Methodology transfer test** — how a specialist in *their* domain reads each
+  of your achievements, which is usually where a career change either works or
+  doesn't.
+- **Interview likelihood** — a per-reader probability, plus a ceiling: the score
+  this resume cannot exceed without facts you don't currently have.
+- **Tiered fixes** — Tier 1 (worth ≥1 point each) down to Tier 3 (skip).
+
+The recommendation is deliberately bounded by what your knowledge base can
+support. Where a gap could only be closed by a claim you haven't evidenced, the
+critique says so and leaves it open rather than inventing a bullet. Suggested
+additions are marked **only if real** — your job is to confirm or drop them.
+
+---
+
+## Privacy
+
+Everything personal is gitignored, so the repository can be public while your
+material stays local:
+
+| Gitignored | What it holds |
+|---|---|
+| `config.md` | Your name, email, phone, tracker ids. Ship `config.example.md` instead |
+| `notes/` | Work notes and meeting transcripts |
+| `resume/` | Old resumes used as a timeline source |
+| `knowledge_base/` | Extractions, papers, reference material |
+| `resume_builder/{experience,bundles}/` | Your built knowledge base |
+| `JDs/` | Real job descriptions (`example_jd.txt` is kept) |
+| `output/` | Generated resumes, cover letters, critiques |
+| `.private-patterns` | Your own names and employers, for the guard below |
+
+A `.gitignore` is only as good as your next `git add`. The repo also ships a
+pre-commit guard:
+
+```bash
+sh scripts/install-hooks.sh          # once, after cloning
+python3 scripts/check_private.py     # or run it by hand on staged changes
+python3 scripts/check_private.py --all   # scan every tracked file
+```
+
+It blocks a commit that stages a private path, or whose added lines contain an
+email address, phone number, Notion link, UUID or API-key-shaped token. The
+detectors are generic so the script itself is safe to publish; your specific
+names and employers go in `.private-patterns`, which is gitignored. Bypass with
+`git commit --no-verify` when you genuinely mean to.
+
+One thing the guard cannot cover: **your git identity is in every commit.** On a
+public repo, `git config user.email` becomes public with it. Use a GitHub
+noreply address if you would rather it didn't:
+
+```bash
+git config user.email "<id>+<username>@users.noreply.github.com"
+```
