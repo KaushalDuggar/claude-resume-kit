@@ -1,138 +1,109 @@
 # claude-resume-kit
 
-Most AI resume tools work the same way: paste resume + paste JD, get a rewrite. They don't know which of your papers is published vs. under review. They don't know you only ran the simulations, not the experiments. They'll upgrade "contributed to" into "developed" without blinking.
+Turn your meeting notes into job applications. You talk through your work once, from [Granola](https://www.granola.ai/) transcripts or by dictation, and Claude Code builds a knowledge base of what you actually did. After that, each application is one command: `/apply` reads the job description, picks and orders your strongest evidence for it, writes a one-page LaTeX resume, and logs the application in your Notion tracker.
 
-This is different. You extract your papers, codebases, and reports once — the system asks structured questions about each one. After that, every new application is just pointing it at a JD. It picks the right achievements, frames them for the audience, enforces accuracy, and generates LaTeX you compile locally.
+Most AI resume tools rewrite whatever you paste in, and they will happily upgrade "helped with" into "led". This one only writes what your notes support. Anything uncertain, like a metric you can't remember or a result you never measured, is marked `TODO` instead of guessed, and it stays flagged until you confirm it.
 
-Two tracks feed one knowledge base. The **paper track** extracts published writing. The **experience track** captures work that was never written down — from meeting transcripts or by dictation — which is what industry applications actually run on. Either one produces an academic CV or a 1-page industry resume.
-
-Built for researchers and engineers with lots of source material (papers, code, reports) who apply to many positions across different employer types.
+Built for engineers who apply to many roles and have done more real work than ever made it onto their old resume.
 
 ---
 
 ## What makes this different
 
-**Knowledge base, not a rewriter.** You extract once. Every application draws from verified source material — not a pasted resume that gets "improved."
+**Built from your notes, not your old resume.** The knowledge base comes from what you said about each project: the problem, what you built, the trade-offs, the result. An old resume is only used for dates and seed bullets.
 
-**Anti-fabrication by design.** Provenance flags on every achievement (published / under review / internal). Verb discipline rules prevent overclaiming. A corrections log ensures fixed errors don't reappear.
+**`TODO` discipline.** Missing or uncertain facts are marked, never filled in. They carry through to the critique as unverified claims, so you know exactly what an interviewer could catch you on.
 
-**AI fingerprint avoidance.** Banned-word lists, structural anti-patterns, and a 12-item post-generation scan so output reads as human-written.
+**Anti-fabrication rules.** Verb discipline separates what you built from what you contributed to, a corrections log stops fixed errors coming back, and work in progress is written as in progress.
 
-**Multi-perspective critique.** Five reader personas (ATS bot through technical reviewer) score your resume across 8 dimensions in a fresh context window.
+**Fit check before you apply.** `/critique` reads the resume as five different reviewers, ranks your gaps against the JD as fatal, serious or cosmetic, and estimates your interview odds.
 
-**LaTeX output, locally compiled.** No data leaves your machine beyond the Claude Code conversation.
+**Reads as human-written.** Banned-word lists, structural anti-patterns and a 12-item scan catch the patterns that make a resume sound machine-made.
 
----
+**Tracked in Notion.** Each `/apply` creates a row with the role, the JD link, what the resume leads with and the gaps to address, with the `.tex` attached.
 
-## Example Output
-
-Here's what the system generates for the included fictional researcher (Dr. Jordan Chen, computational biologist) applying to a tenure-track faculty position:
-
-- [Example Resume (PDF)](resume_builder/examples/example_resume.pdf) — 2-page resume with JD-tailored bullets, skills, and publications
-- [Example Cover Letter (PDF)](resume_builder/examples/example_cover_letter.pdf) — 1-page academic cover letter with specific hooks
-- [Example Session File](resume_builder/examples/example_session_file.md) — the decision log that produced this output
-- [Source .tex files](resume_builder/examples/output/) — the LaTeX source Claude generated
-
-All example data is in `resume_builder/examples/` — extraction, experience file, bundle, config, and session file.
+**Private by default.** Your notes, generated resumes and config are gitignored, and a pre-commit guard blocks any commit containing personal data. See [Privacy](#privacy).
 
 ---
 
 ## What you actually do
 
-**One-time setup — papers (~10 min each):**
-1. Drop your papers/reports into `knowledge_base/papers/`
-2. Run `/setup-extract` on each — Claude reads it and asks you questions about your contributions and publication status
-3. Run `/setup-build-kb` — synthesizes everything into your knowledge base
+**Once per position (~15 min):**
+1. Paste the relevant Granola transcript or summary into `notes/<Org>.md`, or run `/setup-extract-experience capture <Org>` and talk through your projects one at a time
+2. Run `/setup-extract-experience notes/<Org>.md` to turn the notes into structured extractions
+3. Run `/setup-build-kb` once all positions are done
 
-**One-time setup — work experience (~15 min per position):**
-1. Paste meeting transcripts (e.g. from [Granola](https://www.granola.ai/)) into `notes/<Org>.md`, or run `/setup-extract-experience capture <Org>` and talk through your projects one at a time
-2. Run `/setup-extract-experience notes/<Org>.md` for each position
-3. Run `/setup-build-kb`
+**Per application:**
+1. Run `/apply` with the JD: a file in `JDs/`, pasted text, or a public URL
+2. Review the JD match map and bullet plan, then approve or reorder
+3. Get `output/<Company_Role>/resume_*.tex` and a new row in your Notion tracker
+4. Compile on Overleaf and attach the PDF to the Notion row
 
-Uncertain facts get a `TODO` marker rather than a guess, and those markers survive into the critique as unverified claims. See [the experience track](DOCS.md#the-experience-track-work-notes--industry-resume).
-
-**Per application (~15-20 min):**
-1. Drop the JD into `JDs/`
-2. Run `/make-resume JDs/target_job.txt` — approve the bullet plan, get a `.tex` file
-3. Run `/make-cl` for a cover letter
-4. Run `/critique` for a scored review with specific fixes
-
-Or, for industry roles once the shape is settled: `/apply JDs/target_job.txt` does it in one command and logs the application to your Notion tracker.
-
-Each step uses a **separate Claude Code session** for best quality (fresh context = less bias).
+**Optional, in a fresh session:** `/critique` for a scored fit review, then `/edit-resume` to apply the fixes.
 
 ---
 
 ## Prerequisites
 
-- **[Claude Code](https://docs.anthropic.com/en/docs/claude-code)** CLI installed and authenticated
-- **A LaTeX distribution** for compiling `.tex` to `.pdf` (e.g., [TeX Live](https://tug.org/texlive/), [MacTeX](https://tug.org/mactex/), [MiKTeX](https://miktex.org/))
-- **Your research papers** or project documentation ready for extraction
+- **[Claude Code](https://docs.anthropic.com/en/docs/claude-code)** installed and authenticated
+- **A way to compile LaTeX:** [Overleaf](https://www.overleaf.com/), or a local distribution such as [MacTeX](https://tug.org/mactex/) or [TeX Live](https://tug.org/texlive/)
+- **Notion connected to Claude Code** if you want the application tracker (optional)
+- **A meeting-notes tool** such as Granola (optional, since you can dictate instead)
 
 ---
 
-## Try it first (5 minutes)
-
-Want to see what it does before extracting your own papers? The repo includes a complete example knowledge base for a fictional researcher:
-
-```bash
-git clone https://github.com/KaushalDuggar/claude-resume-kit.git
-cd claude-resume-kit
-claude
-/make-resume JDs/example_jd.txt
-```
-
-This runs the full pipeline — JD analysis, bullet selection, LaTeX generation — using the included example data. No setup required.
-
----
-
-## Full Setup
+## Setup
 
 ### 1. Clone and configure
 
 ```bash
 git clone https://github.com/KaushalDuggar/claude-resume-kit.git
 cd claude-resume-kit
-```
-
-```bash
 cp config.example.md config.md
 sh scripts/install-hooks.sh
 ```
 
-Edit `config.md` with your details (name, email, provenance flags, role types). See `resume_builder/examples/example_config.md` for a complete example.
+Fill in `config.md`: **Personal Info** for your resume header, **Positioning** for your headline and anything you must never claim, and **Provenance Flags**. `config.md` is gitignored, and `install-hooks.sh` adds the privacy guard.
 
-`config.md` is gitignored, and `install-hooks.sh` adds a pre-commit guard that blocks a commit containing personal data. See [Privacy](#privacy).
+### 2. Set up the Notion tracker (optional)
 
-### 2. Extract your papers
+Create a Notion database for your applications, then put its page URL, database URL and data source ID in the **Application Tracker** section of `config.md`. The expected columns are listed there. Leave the section out and `/apply` stops after writing the `.tex`.
 
-Place PDFs or `.tex` source files in `knowledge_base/papers/`, then:
+### 3. Capture your work
 
-```
-/setup-extract knowledge_base/papers/my_paper.pdf
-```
-
-Claude reads the paper, asks clarifying questions about your contributions, and creates a structured extraction. Repeat for each paper.
-
-### 3. Build your knowledge base
+Create one notes file per position, plus a timeline:
 
 ```
+notes/
+├── TIMELINE.md     # dates, employers and titles
+├── Acme.md         # one file per position
+└── Projects.md     # side projects and research
+```
+
+Fill each file from your meeting transcripts, or dictate with `/setup-extract-experience capture Acme`. Don't polish it. The skill structures it and adds a `TODO` wherever a fact is missing.
+
+### 4. Build the knowledge base
+
+```
+/setup-extract-experience notes/Acme.md
 /setup-build-kb
 ```
 
-This synthesizes all extractions into experience files, role-type bundles, and support files.
-
-### 4. Customize your LaTeX templates
-
-Open the templates in `resume_builder/templates/` and fill in your FIXED sections — education, header, awards, publications. The `[CONFIG: ...]` placeholders show you what to fill in.
-
-### 5. Generate for a job
+### 5. Apply
 
 ```
-/make-resume JDs/target_job.txt
+/apply JDs/company_role.txt
 ```
 
-Then in separate sessions: `/make-cl` for the cover letter, `/critique` for a scored review.
+See [DOCS.md](DOCS.md) for the experience track in detail, how `/apply` handles Notion's upload limits, and how the critique judges fit.
+
+---
+
+## Also included: papers and academic CVs
+
+This repo is a fork of a kit originally built for researchers, and that path still works. Drop papers into `knowledge_base/papers/` and run `/setup-extract` on each. For academic applications, use `/make-resume` (multi-page resume or CV), `/make-cl` (cover letter) and `/critique` in separate sessions. Paper and experience extractions feed the same knowledge base.
+
+The worked example is upstream's fictional researcher, Dr. Jordan Chen, applying for a faculty position. Here are the [example resume](resume_builder/examples/example_resume.pdf), [cover letter](resume_builder/examples/example_cover_letter.pdf), [session file](resume_builder/examples/example_session_file.md) and [LaTeX source](resume_builder/examples/output/). To try it with no setup, run `/make-resume JDs/example_jd.txt`.
 
 ---
 
